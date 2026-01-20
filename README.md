@@ -3,7 +3,7 @@ Sistema de IA para detecção de pessoas na sala de estudos do Campus da UFC de 
 
 # Sistema de Detecção de Pessoas em Ambientes do Campus
 
-Este projeto apresenta uma solução de Visão Computacional baseada em Redes Neurais Convolucionais (CNN) para a detecção automática de pessoas. O sistema foi desenvolvido como requisito final da disciplina de Inteligência Artificial (2025-2), utilizando o framework **Detectron2**.
+Este projeto apresenta uma solução de Visão Computacional baseada em Redes Neurais Convolucionais (CNN) para a detecção automática de pessoas. O sistema foi desenvolvido como requisito final da disciplina de Inteligência Artificial (2025.2), utilizando o framework **Detectron2**.
 
 ## 🎯 Objetivo e Aplicação em Segurança da Informação
 
@@ -79,5 +79,5 @@ O projeto foi otimizado para execução no **Google Colab** (devido ao uso de GP
 * `model/`: (Link para download do modelo .pth, caso seja muito grande para o Git).
 
 ---
-**Autor:** [Seu Nome]
+**Autor:** Mateus Oliveira
 **Disciplina:** Inteligência Artificial - 2025.2
