@@ -59,7 +59,7 @@ O projeto foi otimizado para execução no **Google Colab** (devido ao uso de GP
 
 1.  Clone o repositório:
     ```bash
-    git clone [https://github.com/SEU_USUARIO/projeto-deteccao-pessoas.git](https://github.com/SEU_USUARIO/projeto-deteccao-pessoas.git)
+    git clone [https://github.com/mateuzu7/projeto-deteccao-pessoas.git](https://github.com/mateuzu7/projeto-deteccao-pessoas.git)
     ```
 2.  Instale as dependências:
     ```bash
