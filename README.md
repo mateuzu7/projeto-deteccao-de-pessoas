@@ -25,7 +25,7 @@ O objetivo principal é monitorar ambientes reais do Campus (laboratórios, corr
 ## 📊 Metodologia
 
 1.  **Coleta de Dados:** Foram capturadas ~94 imagens em ambientes do Campus, variando iluminação e ângulos.
-2.  **Rotulagem:** Anotação manual de *Bounding Boxes* focadas na classe `pessoas`.
+2.  **Rotulagem:** Anotação manual utilizando Polígonos (Segmentação de Instâncias) para delimitar precisamente o contorno das pessoas. Esta abordagem permite que o modelo aprenda não apenas a localização (Bounding Box), mas a forma exata dos indivíduos nos ambientes do Campus.
 3.  **Treinamento:**
     * **Iterações:** 1000
     * **Learning Rate:** 0.00025
