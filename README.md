@@ -53,17 +53,8 @@ O sistema é capaz de realizar inferência em vídeo, simulando uma câmera de s
 ![Webcam Demo](results/images/detect20-01)
 
 
-## 🚀 Como Executar
 
-⚠️ Importante:
-Este projeto necessita de GPU para treinamento e inferência.
-Execute exclusivamente no Google Colab com GPU ativada.
-
-🔧 1. Configurar o Ambiente no Google Colab
-
----
-```
-# 3. Passo a Passo Para Execução
+## 3. Passo a Passo Para Execução
 
 ## 🛠️ Preparando o Ambiente e Instalando o Detectron2
 
@@ -72,23 +63,20 @@ Depois, verifique a existência e o status da GPU executando a célula abaixo:
 
 ```bash
 !nvidia-smi
-
 ```
 
 Se bem-sucedida, você verá uma tabela mostrando a GPU (ex: Tesla T4).
 
 Em seguida, adicione o arquivo zipado do seu dataset (exportado do Roboflow) ao diretório `/content` do ambiente e execute o comando exato abaixo para descompactar (note o uso de aspas devido aos espaços no nome):
 
-
-```
+```bash
 !unzip "Detect.v1-roboflow-instant-1--eval-.coco (1).zip"
-
 ```
 
 Instale a versão estável do Detectron2 compatível com o Colab:
 
 
-```
+```bash
 !python -m pip install 'git+[https://github.com/facebookresearch/detectron2.git](https://github.com/facebookresearch/detectron2.git)'
 
 ```
