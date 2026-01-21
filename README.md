@@ -68,7 +68,12 @@ Anotações: Os arquivos JSON devem estar em `data/annotations/`
     ```bash
     pip install -r requirements.txt
     ```
-4.  Para realizar inferência em novas imagens:
+4. Executar o Treinamento (Fine-Tuning)
+   Para adaptar o modelo pré-treinado às imagens do Campus e gerar o seu próprio arquivo de pesos (`model_final.pth`), execute o script de treinamento:
+```bash
+python training/train.py
+```
+5.  Para realizar inferência em novas imagens:
     ```python
     python inference/test_model.py
     ```
