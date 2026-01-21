@@ -79,7 +79,6 @@ Se bem-sucedida, você verá uma tabela mostrando a GPU (ex: Tesla T4).
 
 Em seguida, adicione o arquivo zipado do seu dataset (exportado do Roboflow) ao diretório `/content` do ambiente e execute o comando exato abaixo para descompactar (note o uso de aspas devido aos espaços no nome):
 
-Bash
 
 ```
 !unzip "Detect.v1-roboflow-instant-1--eval-.coco (1).zip"
@@ -88,7 +87,6 @@ Bash
 
 Instale a versão estável do Detectron2 compatível com o Colab:
 
-Bash
 
 ```
 !python -m pip install 'git+[https://github.com/facebookresearch/detectron2.git](https://github.com/facebookresearch/detectron2.git)'
@@ -106,9 +104,8 @@ Diferente do Faster R-CNN, este modelo é capaz de segmentação, mas aqui estam
 
 Arquivo: `/projeto-deteccao-pessoas/training/train.py`
 
-Python
 
-```
+```python
 import torch, detectron2
 from detectron2.utils.logger import setup_logger
 setup_logger()
@@ -176,9 +173,9 @@ O script filtra especificamente a **classe 1 ("pessoas")**, ignorando outros obj
 
 Arquivo: `/projeto-deteccao-pessoas/inference/test_model.py`
 
-Python
 
-```
+
+```python
 import os, cv2, random
 from detectron2.engine import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer, ColorMode
@@ -242,9 +239,7 @@ O sistema realiza a avaliação quantitativa utilizando o `COCOEvaluator`. Confi
 
 Arquivo: `/projeto-deteccao-pessoas/results/metrics/evaluation.py`
 
-Python
-
-```
+```python
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from detectron2.data import build_detection_test_loader
 
@@ -267,9 +262,9 @@ Essa etapa injeta código JavaScript no Colab para acessar a webcam do navegador
 
 Arquivo: `/projeto-deteccao-pessoas/inference/webcam_monitoring.py`
 
-Python
 
-```
+
+```python
 # --- 1. IMPORTS NECESSÁRIOS ---
 from IPython.display import display, Javascript
 from google.colab.output import eval_js
