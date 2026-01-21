@@ -45,13 +45,13 @@ O modelo alcançou resultados expressivos para o dataset de teste:
 ### Exemplos Visuais
 
 **1. Detecção em Imagem Estática:**
-![Exemplo de Detecção](results/images/resultado_teste.jpg)
-*(Substitua isso pelo print de uma foto com quadrados)*
+![Exemplo de Detecção](results/images/download.png)
+
 
 **2. Monitoramento em Tempo Real (Webcam):**
 O sistema é capaz de realizar inferência em vídeo, simulando uma câmera de segurança IP.
 ![Webcam Demo](results/images/webcam_print.png)
-*(Substitua pelo print da webcam funcionando)*
+
 
 ## 🚀 Como Executar
 
