@@ -121,9 +121,9 @@ from detectron2.data.datasets import register_coco_instances
 
 # Registrando os datasets (usando os nomes das pastas que o zip criou)
 try:
-    register_coco_instances("pessoas_train", {}, "/content/train/_annotations.coco.json", "/content/train")
-    register_coco_instances("pessoas_valid", {}, "/content/valid/_annotations.coco.json", "/content/valid")
-    register_coco_instances("pessoas_test", {}, "/content/test/_annotations.coco.json", "/content/test")
+    register_coco_instances("pessoas_train", {}, "/content/train/train.coco.json", "/content/train")
+    register_coco_instances("pessoas_valid", {}, "/content/valid/valid.coco.json", "/content/valid")
+    register_coco_instances("pessoas_test", {}, "/content/test/test.coco.json", "/content/test")
 except:
     print("Datasets já registrados ou erro nos caminhos.")
 
