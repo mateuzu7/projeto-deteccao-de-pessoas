@@ -76,7 +76,7 @@ O projeto foi otimizado para execução no **Google Colab** (devido ao uso de GP
 * `training/`: Scripts de configuração e treinamento (Fine-tuning).
 * `inference/`: Scripts para teste em imagens e webcam.
 * `results/`: Gráficos de métricas e evidências visuais.
-* `model/`: (Link para download do modelo .pth, caso seja muito grande para o Git).
+* `model/`: (Link para download do modelo .pth).
 
 ---
 **Autor:** Mateus Oliveira
