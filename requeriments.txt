@@ -1,4 +1,17 @@
 torch
 torchvision
+torchaudio
 opencv-python
-detectron2
+numpy
+matplotlib
+pillow
+pyyaml
+# O Detectron2 geralmente é instalado via link do git, mas você pode listá-lo aqui: git+https://github.com/facebookresearch/detectron2.git
+
+# Por que esses itens?
+
+torch, torchvision e torchaudio: São a base para rodar o modelo Mask R-CNN.
+opencv-python: Necessário para manipular as imagens e rodar a webcam.
+numpy: Essencial para os cálculos das matrizes das imagens.
+matplotlib: Usado pelo Detectron2 para desenhar as previsões nas fotos.
+pyyaml: O Detectron2 usa arquivos .yaml para carregar as configurações do modelo
