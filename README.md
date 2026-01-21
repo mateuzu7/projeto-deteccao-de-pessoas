@@ -45,7 +45,7 @@ O modelo alcançou resultados expressivos para o dataset de teste:
 ### Exemplos Visuais
 
 **1. Detecção em Imagem Estática:**
-![Exemplo de Detecção](results/images/download(2).png)
+![Exemplo de Detecção](results/images/download_(2).png)
 
 
 **2. Monitoramento em Tempo Real (Webcam):**
