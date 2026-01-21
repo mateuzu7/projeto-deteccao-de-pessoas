@@ -60,12 +60,15 @@ O projeto foi otimizado para execução no **Google Colab** (devido ao uso de GP
 1.  Clone o repositório:
     ```bash
     git clone [https://github.com/mateuzu7/projeto-deteccao-pessoas.git](https://github.com/mateuzu7/projeto-deteccao-pessoas.git)
-    ```
-2.  Instale as dependências:
+2.  Organização dos Dados
+Certifique-se de que o dataset está estruturado corretamente para que o Detectron2 reconheça o formato COCO:
+Imagens: Devem estar em data/images/ (subpastas train, valid, test).
+Anotações: Os arquivos JSON devem estar em data/annotations/
+3.  Instale as dependências:
     ```bash
     pip install -r requirements.txt
     ```
-3.  Para realizar inferência em novas imagens:
+4.  Para realizar inferência em novas imagens:
     ```python
     python inference/test_model.py
     ```
