@@ -88,7 +88,7 @@ Instale a versão estável do Detectron2 compatível com o Colab:
 
 Nesta etapa, o código realiza o registro dos datasets (`train`, `valid`, `test`) no formato COCO. Em seguida, prepara o modelo **Mask R-CNN** (ResNet-50-FPN) usando o Detectron2.
 
-Diferente do Faster R-CNN, este modelo é capaz de segmentação, mas aqui estamos focando na detecção. Definimos **2 classes** (0: objects, 1: pessoas) e configuramos os hiperparâmetros de treino.
+Devido a um artefato gerado durante a exportação do Roboflow, o dataset apresenta **2 classes** (0: objects, 1: pessoas). No entanto, o treinamento é configurado para focar exclusivamente na detecção da classe **"pessoas"**, ignorando a classe residual.
 
 Arquivo: `/projeto-deteccao-pessoas/training/train.py`
 
