@@ -63,7 +63,7 @@ O projeto foi otimizado para execução no **Google Colab** (devido ao uso de GP
 2.  Organização dos Dados
 Certifique-se de que o dataset está estruturado corretamente para que o Detectron2 reconheça o formato COCO:
 Imagens: Devem estar em `data/images/` (subpastas `train`, `valid`, `test`).
-Anotações: Os arquivos JSON devem estar em data/annotations/
+Anotações: Os arquivos JSON devem estar em `data/annotations/`
 3.  Instale as dependências:
     ```bash
     pip install -r requirements.txt
