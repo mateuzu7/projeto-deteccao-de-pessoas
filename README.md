@@ -62,42 +62,53 @@ Execute exclusivamente no Google Colab com GPU ativada.
 🔧 1. Configurar o Ambiente no Google Colab
 
 ---
-## 3. Passo a Passo Para Execução
-## Preparando o Ambiente e Instalando o Detectron2
-Inicialmente, estando no ambiente de nuvem (Colab), altere o ambiente de execução para GPU. Depois, em uma célula, verifique a existência da GPU:
+```
+# 3. Passo a Passo Para Execução
 
-```python
+## 🛠️ Preparando o Ambiente e Instalando o Detectron2
+
+Inicialmente, estando no ambiente de nuvem (Google Colab), altere o ambiente de execução para **GPU**.
+Depois, verifique a existência e o status da GPU executando a célula abaixo:
+
+```bash
 !nvidia-smi
+
 ```
 
-Se bem-sucedida, você verá algo como:
-```python
-+-----------------------------------------------------------------------------------------+
-| NVIDIA-SMI 550.54.15              Driver Version: 550.54.15      CUDA Version: 12.4     |
-|-----------------------------------------+------------------------+----------------------|
-| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
-| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
-|=========================================+========================+======================|
-|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |
-| N/A   58C    P0             29W /   70W |    5554MiB /  15360MiB |      0%      Default |
-+-----------------------------------------------------------------------------------------+
-```
-Em seguida, adicione o arquivo zipado do seu dataset no formato COCO-like ao diretório /content do ambiente e execute:
-```python
-!unzip "PESSOA.v1-roboflow-instant-1--eval-.coco.zip"
-```
-Instale o Detectron2 no ambiente:
-```python
-!python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
-```
-## Configuração do Dataset e Treinamento do Modelo
-Nesta etapa, o código realiza o registro dos datasets no formato COCO, configurando os conjuntos de treino, validação e teste. Em seguida, prepara o modelo Faster R-CNN usando o Detectron2, definindo parâmetros essenciais como número de classes, taxa de aprendizado, tamanho do batch, número de iterações e pesos iniciais.
+Se bem-sucedida, você verá uma tabela mostrando a GPU (ex: Tesla T4).
 
-O código também cria a pasta de saída para armazenar os resultados e executa o treinamento do modelo, ajustando os pesos para que ele aprenda a detectar pessoas nas imagens do dataset
-Esta fase pode ser implementada usando `/projeto-deteccao-pessoas/training/train.py`. Lembre-se de substituir a classe "person" pelas classes específicas do seu dataset.`
-```python
-#/train.py
+Em seguida, adicione o arquivo zipado do seu dataset (exportado do Roboflow) ao diretório `/content` do ambiente e execute o comando exato abaixo para descompactar (note o uso de aspas devido aos espaços no nome):
 
+Bash
+
+```
+!unzip "Detect.v1-roboflow-instant-1--eval-.coco (1).zip"
+
+```
+
+Instale a versão estável do Detectron2 compatível com o Colab:
+
+Bash
+
+```
+!python -m pip install 'git+[https://github.com/facebookresearch/detectron2.git](https://github.com/facebookresearch/detectron2.git)'
+
+```
+
+* * * * *
+
+⚙️ Configuração do Dataset e Treinamento do Modelo
+--------------------------------------------------
+
+Nesta etapa, o código realiza o registro dos datasets (`train`, `valid`, `test`) no formato COCO. Em seguida, prepara o modelo **Mask R-CNN** (ResNet-50-FPN) usando o Detectron2.
+
+Diferente do Faster R-CNN, este modelo é capaz de segmentação, mas aqui estamos focando na detecção. Definimos **2 classes** (0: objects, 1: pessoas) e configuramos os hiperparâmetros de treino.
+
+Arquivo: `/projeto-deteccao-pessoas/training/train.py`
+
+Python
+
+```
 import torch, detectron2
 from detectron2.utils.logger import setup_logger
 setup_logger()
@@ -113,130 +124,153 @@ from detectron2.data.datasets import register_coco_instances
 
 # Registrando os datasets (usando os nomes das pastas que o zip criou)
 try:
-    register_coco_instances("person_train", {}, "/content/train/_annotations.coco.json", "/content/train")
-    register_coco_instances("person_valid", {}, "/content/valid/_annotations.coco.json", "/content/valid")
-    register_coco_instances("person_test", {}, "/content/test/_annotations.coco.json", "/content/test")
+    register_coco_instances("pessoas_train", {}, "/content/train/_annotations.coco.json", "/content/train")
+    register_coco_instances("pessoas_valid", {}, "/content/valid/_annotations.coco.json", "/content/valid")
+    register_coco_instances("pessoas_test", {}, "/content/test/_annotations.coco.json", "/content/test")
 except:
     print("Datasets já registrados ou erro nos caminhos.")
 
-person_metadata = MetadataCatalog.get("person_train")
+pessoas_metadata = MetadataCatalog.get("pessoas_train")
+
+# Configuração do Modelo Mask R-CNN
 cfg = get_cfg()
-cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
-cfg.DATASETS.TRAIN = ("person_train",)
-cfg.DATASETS.TEST = ("person_valid",) # Validação durante o treino
+cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+
+cfg.DATASETS.TRAIN = ("pessoas_train",)
+cfg.DATASETS.TEST = ("pessoas_valid",) # Validação durante o treino
 cfg.DATALOADER.NUM_WORKERS = 2
-cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
+
+# Pesos iniciais (Transfer Learning)
+cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
 
 cfg.SOLVER.IMS_PER_BATCH = 2
 cfg.SOLVER.BASE_LR = 0.00025
-cfg.SOLVER.MAX_ITER = 1000 # Quantidade boa para 94 fotos
+cfg.SOLVER.MAX_ITER = 1000 # Quantidade ajustada para o dataset
 cfg.SOLVER.STEPS = []
 
-# CORREÇÃO: Definindo 2 classes (0: objects, 1: person)
+# DEFINIÇÃO DE CLASSES: 2 (0: objects, 1: pessoas)
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
-
-# Adicionando a correção para o formato das máscaras
 
 cfg.OUTPUT_DIR = "/content/output"
 os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
+# Iniciar Treinamento
 trainer = DefaultTrainer(cfg)
 trainer.resume_or_load(resume=False)
 trainer.train()
+
 ```
-## Inferência e Visualização de Detecções do Modelo Treinado
-Aqui, o código carrega o modelo treinado e define o limiar mínimo de confiança para considerar uma detecção válida. Em seguida, realiza inferência em imagens de teste, filtrando apenas a classe person para exibir as pessoas detectadas.
 
-Os resultados são visualizados graficamente, com caixas delimitadoras sobrepostas em fundo preto, destacando os objetos detectados. Também é possível testar novas imagens externas, substituindo o caminho da imagem pelo da sua própria foto.
-O código desta etapa está em `/projeto-deteccao-pessoas/inference/test_model.py.`
-```python
-#test_model.p
+* * * * *
 
-# Carregar o modelo que acabou de ser treinado
+🔍 Inferência e Visualização
+----------------------------
+
+Aqui, o código carrega os pesos treinados (`model_final.pth`) e realiza inferência em:
+
+1.  Imagens aleatórias do conjunto de teste.
+
+2.  Uma imagem externa específica (ex: foto do WhatsApp).
+
+O script filtra especificamente a **classe 1 ("pessoas")**, ignorando outros objetos, e exibe o resultado com fundo preto e branco (`ColorMode.IMAGE_BW`) para destacar a detecção.
+
+Arquivo: `/projeto-deteccao-pessoas/inference/test_model.py`
+
+Python
+
+```
+import os, cv2, random
+from detectron2.engine import DefaultPredictor
+from detectron2.utils.visualizer import Visualizer, ColorMode
+from google.colab.patches import cv2_imshow
+
+# Carregar o modelo treinado
 cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
 cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5 # Confiança mínima
 predictor = DefaultPredictor(cfg)
 
-from detectron2.utils.visualizer import ColorMode
-
-dataset_dicts = DatasetCatalog.get("person_test")
+print("--- TESTE 1: IMAGENS ALEATÓRIAS ---")
+dataset_dicts = DatasetCatalog.get("pessoas_test")
 for d in random.sample(dataset_dicts, 3):
     im = cv2.imread(d["file_name"])
     outputs = predictor(im)
 
-    # Filtramos para mostrar apenas a classe 1 (person)
+    # Filtramos para mostrar apenas a classe 1 (pessoas)
     instances = outputs["instances"].to("cpu")
     mask = instances.pred_classes == 1
-    person_only = instances[mask]
+    pessoas_only = instances[mask]
 
     v = Visualizer(im[:, :, ::-1],
-                   metadata=person_metadata,
+                   metadata=pessoas_metadata,
                    scale=0.8,
                    instance_mode=ColorMode.IMAGE_BW # Fundo PB destaca a detecção
     )
-    out = v.draw_instance_predictions(person_only)
+    out = v.draw_instance_predictions(pessoas_only)
     print(f"Resultado para: {d['file_name']}")
-    cv2_imshow(out.get_image()[:, :, ::-1]) 
-  
-import cv2
-from google.colab.patches import cv2_imshow
-from detectron2.utils.visualizer import Visualizer, ColorMode
+    cv2_imshow(out.get_image()[:, :, ::-1])
 
-# 1. Caminho da sua nova imagem
-caminho_imagem_nova = "/content/WhatsApp Image 2026-01-18 at 11.06.07 PM.jpeg" # Substitua pelo nome do seu arquivo
+print("\n--- TESTE 2: IMAGEM EXTERNA ---")
+# Caminho da sua nova imagem
+caminho_imagem_nova = "/content/WhatsApp Image 2026-01-18 at 11.06.07 PM.jpeg"
 
-# 2. Carregar a imagem com o OpenCV
-im = cv2.imread(caminho_imagem_nova)
+if os.path.exists(caminho_imagem_nova):
+    im = cv2.imread(caminho_imagem_nova)
+    outputs = predictor(im)
 
-# 3. Fazer a predição (o modelo vai analisar a imagem)
-outputs = predictor(im)
+    # Filtrar classe 1 (pessoas)
+    instances = outputs["instances"].to("cpu")
+    pessoas_only = instances[instances.pred_classes == 1]
 
-# 4. Filtrar para mostrar apenas a classe 1 (person)
-# Isso evita que o modelo mostre a classe 0 (vazia)
-instances = outputs["instances"].to("cpu")
-person_only = instances[instances.pred_classes == 1]
+    v = Visualizer(im[:, :, ::-1],
+                   metadata=pessoas_metadata,
+                   scale=0.8,
+                   instance_mode=ColorMode.IMAGE_BW)
 
-# 5. Visualizar o resultado
-v = Visualizer(im[:, :, ::-1],
-               metadata=person_metadata,
-               scale=0.8,
-               instance_mode=ColorMode.IMAGE_BW)
-
-out = v.draw_instance_predictions(person_only)
-cv2_imshow(out.get_image()[:, :, ::-1])
+    out = v.draw_instance_predictions(pessoas_only)
+    cv2_imshow(out.get_image()[:, :, ::-1])
+else:
+    print("Imagem externa não encontrada. Verifique o caminho.")
 
 ```
-## Avaliação de Desempenho com Métricas COCO
-Nesta etapa, o sistema realiza a avaliação quantitativa do modelo utilizando o COCOEvaluator para calcular métricas de desempenho sobre o conjunto de teste. Apenas as bounding boxes são avaliadas, evitando problemas com segmentação de máscaras.
 
-O modelo processa todas as imagens de teste e gera métricas como Average Precision (AP) e recall, permitindo verificar a acurácia do detector de pessoas de forma objetiva. Os resultados são exibidos no console e podem ser salvos para análises posteriores.
+* * * * *
 
-O código de avaliação pode ser encontrado em `/projeto-deteccao-pessoas/results/metrics/evaluation.py`.
-```python
-#evaluation.py
+📊 Avaliação de Desempenho (Métricas COCO)
+------------------------------------------
 
+O sistema realiza a avaliação quantitativa utilizando o `COCOEvaluator`. Configuramos `tasks=("bbox",)` para avaliar apenas as caixas delimitadoras, evitando erros relacionados à segmentação (máscaras) caso o dataset não esteja perfeitamente rotulado para tal.
+
+Arquivo: `/projeto-deteccao-pessoas/results/metrics/evaluation.py`
+
+Python
+
+```
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from detectron2.data import build_detection_test_loader
 
-# Avaliamos apenas BBOX (caixas) para evitar o erro de segmentação que você teve
-evaluator = COCOEvaluator("person_test", output_dir="./output", tasks=("bbox",))
-val_loader = build_detection_test_loader(cfg, "person_test")
+# Avaliamos apenas BBOX (caixas) para evitar erro de segmentação
+evaluator = COCOEvaluator("pessoas_test", output_dir="./output", tasks=("bbox",))
+val_loader = build_detection_test_loader(cfg, "pessoas_test")
 
 print("--- MÉTRICAS DE DESEMPENHO ---")
 results = inference_on_dataset(predictor.model, val_loader, evaluator)
 print(results)
+
 ```
 
-## Monitoramento em Tempo Real com Câmera
-Essa etapa permite monitoramento de vídeo em tempo real usando a câmera do dispositivo. O código inicializa a captura, converte frames em imagens processáveis e exibe a interface de streaming no navegador com sobreposição de informações.
+* * * * *
 
-Para cada frame capturado, o modelo detecta pessoas (classe person) e exibe caixas delimitadoras sobre um canvas preto, junto com um contador do número de pessoas detectadas. O loop continua até o usuário interromper o monitoramento, permitindo avaliação dinâmica do modelo em cenários reais, útil para vigilância e sistemas de segurança.
+📹 Monitoramento em Tempo Real (Webcam)
+---------------------------------------
 
-O código do monitoramento por webcam está em `/projeto-deteccao-pessoas/inference/webcam-monitoring.py`.
-```python
-#webcam-monitoring.py
+Essa etapa injeta código JavaScript no Colab para acessar a webcam do navegador. O Python processa cada frame, detecta a classe "pessoas" e desenha as caixas em tempo real.
 
-# --- 1. IMPORTS NECESSÁRIOS (Isso estava faltando) ---
+Arquivo: `/projeto-deteccao-pessoas/inference/webcam_monitoring.py`
+
+Python
+
+```
+# --- 1. IMPORTS NECESSÁRIOS ---
 from IPython.display import display, Javascript
 from google.colab.output import eval_js
 from base64 import b64decode, b64encode
@@ -246,10 +280,9 @@ import io
 import PIL.Image
 import os
 
-# Certifique-se de que o cfg e o predictor já foram definidos nas células anteriores!
-# Se der erro de 'cfg not defined', rode a célula de configuração do modelo antes.
+# (Assume que cfg e predictor já estão carregados das etapas anteriores)
 
-# --- 2. FUNÇÕES DE SUPORTE PARA O VÍDEO ---
+# --- 2. FUNÇÕES DE SUPORTE JS/PYTHON ---
 def array_to_image(a):
     res = PIL.Image.fromarray(a)
     byte_io = io.BytesIO()
@@ -335,15 +368,15 @@ try:
         outputs = predictor(img)
         instances = outputs["instances"].to("cpu")
 
-        # Filtrar apenas classe 1 (person)
-        person_only = instances[instances.pred_classes == 1]
+        # Filtrar apenas classe 1 (pessoas)
+        pessoas_only = instances[instances.pred_classes == 1]
 
         canvas = np.zeros((480, 640, 3), dtype=np.uint8)
-        v = Visualizer(canvas, metadata=person_metadata, scale=1.0)
-        out = v.draw_instance_predictions(person_only)
+        v = Visualizer(canvas, metadata=pessoas_metadata, scale=1.0)
+        out = v.draw_instance_predictions(pessoas_only)
 
         bbox_img_data = 'data:image/png;base64,' + array_to_image(out.get_image())
-        label_html = f"SEGURANÇA CAMPUS: {len(person_only)} PESSOA(S) DETECTADA(S)"
+        label_html = f"SEGURANÇA CAMPUS: {len(pessoas_only)} PESSOA(S) DETECTADA(S)"
 except Exception as e:
     print("Monitoramento finalizado.")
 ```
