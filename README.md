@@ -55,28 +55,21 @@ O sistema é capaz de realizar inferência em vídeo, simulando uma câmera de s
 
 ## 🚀 Como Executar
 
-O projeto foi otimizado para execução no **Google Colab** (devido ao uso de GPU).
+⚠️ Importante:
+Este projeto necessita de GPU para treinamento e inferência.
+Execute exclusivamente no Google Colab com GPU ativada.
 
-1.  Clone o repositório:
-    ```bash
-    git clone [https://github.com/mateuzu7/projeto-deteccao-pessoas.git](https://github.com/mateuzu7/projeto-deteccao-pessoas.git)
-2.  Organização dos Dados
-Certifique-se de que o dataset está estruturado corretamente para que o Detectron2 reconheça o formato COCO:
-Imagens: Devem estar em `data/images/` (subpastas `train`, `valid`, `test`).
-Anotações: Os arquivos JSON devem estar em `data/annotations/`
-3.  Instale as dependências:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4. Executar o Treinamento (Fine-Tuning)
-   Para adaptar o modelo pré-treinado às imagens do Campus e gerar o seu próprio arquivo de pesos (`model_final.pth`), execute o script de treinamento:
-   ```bash
-   python training/train.py
-   ```
-5.  Para realizar inferência em novas imagens:
-    ```python
-    python inference/test_model.py
-    ```
+🔧 1. Configurar o Ambiente no Google Colab
+
+1 Acesse: https://colab.research.google.com
+2 Crie um novo notebook
+3 Ative a GPU:
+* Menu Ambiente de execução
+* Alterar tipo de ambiente de execução
+* Selecione:
+* Acelerador de hardware: GPU
+* Clique em Salvar
+Verifique se a GPU está ativa (Célula 1):
 
 ## 📁 Estrutura do Repositório
 
