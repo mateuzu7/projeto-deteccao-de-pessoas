@@ -50,7 +50,7 @@ O modelo alcançou resultados expressivos para o dataset de teste:
 
 **2. Monitoramento em Tempo Real (Webcam):**
 O sistema é capaz de realizar inferência em vídeo, simulando uma câmera de segurança IP.
-![Webcam Demo](results/images/detect20-01)
+![Webcam Demo](results/images/detect20-01.png)
 
 
 
